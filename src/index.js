@@ -96,7 +96,7 @@ export function catcher(cb, main, err) {
       return self(mainstream.val);
     }
     if (isDefined(errstream.val)) {
-      return self(cb(errstream.val));
+      return self(cb(errstream.val)).val;
     }
     /* eslint-disable no-void */
     return self(void 0);
