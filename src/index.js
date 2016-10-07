@@ -55,9 +55,6 @@ export function runner(cb, runStream) {
     self(run(cb, st));
   }, [runStream]);
 
-  // execute immediately when bound
-  run(cb, runStream);
-
   return bindStream(running);
 }
 
