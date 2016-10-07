@@ -1,7 +1,7 @@
 {
   "name": "flyd-run",
   "version": "1.0.0",
-  "description": "'Stateful' Streams with Flyd",
+  "description": "'Smarter' Streams with Flyd - run/error/catch functional handlers",
   "main": "lib/index.js",
   "scripts": {
     "compile": "rimraf lib/* && babel src -d lib",
@@ -15,7 +15,10 @@
   "keywords": [
     "flyd",
     "streams",
-    "functional"
+    "functional",
+    "reactive",
+    "modular",
+    "library"
   ],
   "author": "Doug Brown <npm@douggo.com> (http://douggo.com)",
   "license": "ISC",
