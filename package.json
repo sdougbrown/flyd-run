@@ -1,6 +1,6 @@
 {
   "name": "flyd-run",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "'Smarter' Streams with Flyd - run/error/catch functional handlers",
   "main": "lib/index.js",
   "scripts": {

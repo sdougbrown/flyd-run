@@ -149,4 +149,60 @@ o.spec('Run Stream Basics', () => {
       });
     });
   });
+
+  o.spec('Chaining Run', () => {
+    const add = (x => x + 1);
+
+    o('it is running turtles all the way down', () => {
+      const st = stream(0);
+      const one = st.run(add);
+      const two = one.run(add);
+      const three = two.run(add);
+      const four = three.run(add);
+
+      o(four()).equals(4);
+    });
+
+    o('chained runs do not break when async', (done, timeout) => {
+      timeout(50);
+
+      const st = stream();
+      const rt = stream();
+      const vt = stream();
+
+      const addToRt = _ => rt(add(3));
+      const addToVt = x => vt(add(x));
+
+      st.run(() => {
+        setTimeout(addToRt, 20);
+      });
+
+      rt.run((val) => {
+        setTimeout(_ => addToVt(val), 10);
+      });
+
+      vt.run((val) => {
+        o(val).equals(5);
+        done();
+      });
+
+      st(0);
+    });
+
+    o('absorbs streams to make chaining less painful', (done) => {
+      const st = stream();
+      const rt = stream();
+      const vt = stream();
+      const yt = stream();
+
+      st.run(rt).run(vt).run(yt).run(_ => {
+        o(rt()).equals(1);
+        o(vt()).equals(1);
+        o(yt()).equals(1);
+        done();
+      });
+
+      st(1);
+    });
+  });
 });

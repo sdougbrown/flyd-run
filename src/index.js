@@ -1,4 +1,4 @@
-import { stream, combine } from 'flyd';
+import { stream, combine, isStream } from 'flyd';
 import { isDefined } from './is';
 
 /**
@@ -51,8 +51,8 @@ streamer.reject = rejecter;
  * @returns {flyd.stream}
  */
 export function runner(cb, runStream) {
-  const running = combine((st, self) => {
-    self(run(cb, st));
+  const running = combine((st) => {
+    return run(cb, st);
   }, [runStream]);
 
   return bindStream(running);
@@ -70,11 +70,11 @@ export function runner(cb, runStream) {
  * @returns {flyd.stream}
  */
 export function errRunner(cb, main, err) {
-  return combine((mainstream, errstream, self) => {
+  return combine((mainstream, errstream) => {
     if (isDefined(mainstream.val)) {
-      return self(void 0); // eslint-disable-line no-void
+      return void 0; // eslint-disable-line no-void
     }
-    return self(run(cb, errstream));
+    return run(cb, errstream);
   }, [main, err]);
 }
 
@@ -91,15 +91,15 @@ export function errRunner(cb, main, err) {
  * @returns {flyd.stream}
  */
 export function catcher(cb, main, err) {
-  return combine((mainstream, errstream, self) => {
+  return combine((mainstream, errstream) => {
     if (isDefined(mainstream.val)) {
-      return self(mainstream.val);
+      return mainstream.val;
     }
     if (isDefined(errstream.val)) {
-      return self(cb(errstream.val)).val;
+      return cb(errstream.val);
     }
     /* eslint-disable no-void */
-    return self(void 0);
+    return void 0;
     /* eslint-enable no-void */
   }, [main, err]);
 }
@@ -114,8 +114,20 @@ export function catcher(cb, main, err) {
  */
 function run(cb, st) {
   /* eslint-disable no-void */
-  return (isDefined(st.val)) ? cb(st.val) : void 0;
+  return (isDefined(st.val) ? absorb(cb(st.val)) : void 0);
   /* eslint-enable no-void */
+}
+
+/**
+ * absorb
+ *
+ * looks to see if a value is a stream, and if so
+ * extract the value from that stream
+ *
+ * otherwise, just return the value
+ */
+function absorb(val) {
+  return (isStream(val)) ? val.val : val;
 }
 
 
